@@ -1,0 +1,8 @@
+---
+- name: Reboot Kubernetes Nodes
+  hosts: nodes
+  gather_facts: no
+  become: yes
+  tasks:
+    - name: Reboot
+      reboot:

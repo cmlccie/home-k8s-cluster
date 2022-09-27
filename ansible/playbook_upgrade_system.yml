@@ -1,0 +1,21 @@
+---
+- name: Upgrade System (APT) Packages
+  hosts: nodes
+  become: yes
+  tasks:
+    - name: Update Package Lists
+      apt:
+        update_cache: yes
+    - name: Upgrade Packages
+      apt:
+        upgrade: full
+    - name: Clean Package Cache
+      apt:
+        autoclean: yes
+    - name: Remove Unused Dependencies
+      apt:
+        autoremove: yes
+    - name: Ensure the en_US.UTF-8 Locale Exists
+      locale_gen:
+        name: en_US.UTF-8
+        state: present

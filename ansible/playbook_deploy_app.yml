@@ -1,0 +1,35 @@
+---
+- name: Deploy SenseAPI App
+  hosts: sensehatpi
+  gather_facts: no
+  tasks:
+    - name: Application directory exists
+      become: true
+      file:
+        path: /opt/senseapi
+        state: directory
+        owner: pi
+        group: pi
+        mode: '0755'
+
+    - name: Create the /opt/senseapi-venv virtual environment directory
+      become: true
+      file:
+        path: /opt/senseapi-venv
+        state: directory
+        owner: pi
+        group: pi
+        mode: '0755'
+
+    - name: Syncronize local /senseapi directory to remote /opt/senseapi
+      synchronize:
+        src: ../senseapi/
+        dest: /opt/senseapi/
+        delete: yes
+
+    - name: Install Python application dependencies
+      pip:
+        virtualenv_command: /usr/bin/python3 -m venv
+        virtualenv: /opt/senseapi-venv
+        requirements: /opt/senseapi/requirements.txt
+        virtualenv_site_packages: yes

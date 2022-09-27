@@ -1,0 +1,1 @@
+SUBSYSTEM=="fb1",GROUP="sensehat",MODE="0660"

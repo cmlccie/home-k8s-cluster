@@ -1,0 +1,60 @@
+---
+- name: Gather facts for the original Ansible user ID (logged-in user)
+  hosts: sensehat_nodes
+  gather_facts: yes
+  become: no
+  tasks:
+    - name: Set "original_ansible_user_id" fact
+      set_fact: original_ansible_user_id="{{ ansible_user_id }}"
+- name: Configure Raspberry Pi system
+  hosts: sensehat_nodes
+  gather_facts: yes
+  become: yes
+  tasks:
+    - name: System-level dependencies installed
+      apt:
+        update_cache: yes
+        name:
+          - sense-hat
+          - i2c-tools
+        state: latest
+    - name: Ensure i2c-dev kernal module is configured
+      community.general.modprobe:
+        name: i2c-dev
+        state: present
+    - name: Ensure "i2c" group exists
+      group:
+        name: i2c
+        state: present
+    - name: Ensure "sensehat" group exists
+      group:
+        name: sensehat
+        state: present
+    - name: Ensure "senseapi" group exists
+      group:
+        name: senseapi
+        state: present
+    - name: Copy the "fb1" udev rules file
+      ansible.builtin.copy:
+        src: etc/udev/rules.d/10-fb-permissions.rules
+        dest: /etc/udev/rules.d/10-fb-permissions.rules
+        owner: root
+        group: root
+        mode: '0644'
+    - name: Ensure "senseapi" user exists and is configured
+      ansible.builtin.user:
+        name: senseapi
+        group: senseapi
+        state: present
+        append: yes
+        groups:
+          - i2c
+          - sensehat
+    - name: Ensure "{{ original_ansible_user_id }}" user is a member of the sense hat groups
+      ansible.builtin.user:
+        name: "{{ original_ansible_user_id }}"
+        append: yes
+        groups:
+          - i2c
+          - sensehat
+          - senseapi

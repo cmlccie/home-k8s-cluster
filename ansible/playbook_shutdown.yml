@@ -1,0 +1,8 @@
+---
+- name: Shutdown Kubernetes Nodes
+  hosts: nodes
+  gather_facts: no
+  become: yes
+  tasks:
+  - name: Shutdown
+    community.general.shutdown:
