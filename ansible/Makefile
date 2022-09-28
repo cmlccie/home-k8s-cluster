@@ -9,6 +9,9 @@ configure_sensehat_nodes:
 containerd:
 	ansible-playbook playbook_containerd.yml
 
+kube:
+	ansible-playbook playbook_kube.yml
+
 upgrade:
 	ansible-playbook playbook_upgrade_system.yml
 

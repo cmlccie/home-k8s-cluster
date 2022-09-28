@@ -1,0 +1,48 @@
+---
+- name: kubeadm, kubelet, and kubectl installed
+  hosts: master_nodes
+  become: yes
+  tasks:
+    - name: System packages to allow APT repository access over HTTPS
+      apt:
+        update_cache: yes
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+        state: latest
+
+    - name: Google Cloud APT key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+
+    - name: Kubernetes APT repository
+      apt_repository:
+        repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+
+    - name: kubeadm, kubelet, and kubectl packages
+      apt:
+        update_cache: yes
+        allow_change_held_packages: yes
+        allow_downgrade: yes
+        name:
+          - "kubeadm={{ kubernetes_version }}"
+          - "kubelet={{ kubernetes_version }}"
+          - "kubectl={{ kubernetes_version }}"
+
+    - name: Hold kubeadm
+      dpkg_selections:
+        name: kubeadm
+        selection: hold
+
+    - name: Hold kubelet
+      dpkg_selections:
+        name: kubelet
+        selection: hold
+
+    - name: Hold kubectl
+      dpkg_selections:
+        name: kubectl
+        selection: hold
