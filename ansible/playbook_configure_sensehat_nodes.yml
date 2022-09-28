@@ -36,7 +36,7 @@
         state: present
     - name: Copy the "fb1" udev rules file
       ansible.builtin.copy:
-        src: etc/udev/rules.d/10-fb-permissions.rules
+        src: root/etc/udev/rules.d/10-fb-permissions.rules
         dest: /etc/udev/rules.d/10-fb-permissions.rules
         owner: root
         group: root
