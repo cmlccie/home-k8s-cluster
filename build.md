@@ -1,181 +1,160 @@
 # Home Kubernetes Cluster Build
 
-## Install `containerd` using `apt`
+## Configure nodes
 
-> "The containerd.io packages in DEB and RPM formats are distributed by Docker (not by the containerd project). See the [Docker documentation](https://docs.docker.com/engine/install/debian/) for how to set up apt-get or dnf to install containerd.io packages." [Containerd Docs](https://github.com/containerd/containerd/blob/main/docs/getting-started.md#option-2-from-apt-get-or-dnf)
+From the `ansible/` directory:
 
-### Setup the repository
+```shell
+❯ make configure_nodes
+```
 
-[Source Docs](https://docs.docker.com/engine/install/debian/#set-up-the-repository)
+## Install `containerd`
 
-I am using `apt` instead of `apt-get` - docs adapted.
+From the `ansible/` directory:
 
-1. Update the `apt` package index and install packages to allow `apt` to use a repository over HTTPS:
+```shell
+❯ make containerd
+```
 
-    ```shell
-    sudo apt update
-    sudo apt install \
-        ca-certificates \
-        curl \
-        gnupg \
-        lsb-release
-    ```
+## Install `kubeadm`, `kubelet`, and `kubectl`
 
-    <details>
-    <summary>Output</summary>
+From the `ansible/` directory:
 
-    ```shell
-    pi@rpi-70-4b:~ $ sudo apt update
-    Get:1 http://security.debian.org/debian-security bullseye-security InRelease [48.4 kB]
-    Hit:2 http://deb.debian.org/debian bullseye InRelease
-    Hit:3 http://deb.debian.org/debian bullseye-updates InRelease
-    Hit:4 http://archive.raspberrypi.org/debian bullseye InRelease
-    Get:5 http://security.debian.org/debian-security bullseye-security/main armhf Packages [185 kB]
-    Get:6 http://security.debian.org/debian-security bullseye-security/main arm64 Packages [184 kB]
-    Get:7 http://security.debian.org/debian-security bullseye-security/main Translation-en [117 kB]
-    Fetched 535 kB in 1s (427 kB/s)
-    Reading package lists... Done
-    Building dependency tree... Done
-    Reading state information... Done
-    All packages are up to date.
-    pi@rpi-70-4b:~ $ sudo apt install ca-certificates curl gnupg lsb-release
-    Reading package lists... Done
-    Building dependency tree... Done
-    Reading state information... Done
-    ca-certificates is already the newest version (20210119).
-    curl is already the newest version (7.74.0-1.3+deb11u3).
-    gnupg is already the newest version (2.2.27-2+deb11u2).
-    gnupg set to manually installed.
-    lsb-release is already the newest version (11.1.0).
-    lsb-release set to manually installed.
-    0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
-    ```
+```shell
+❯ make kube
+```
 
-    </details>
+## Create a cluster with `kubeadm`
 
-    The needed system packages were already installed.
+On the first master node:
 
-2. Add Docker's official GPG key:
+```shell
+kubeadm init
+```
 
-    ```shell
-    sudo mkdir -p /etc/apt/keyrings
-    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    ```
+<details>
+<summary>Output</summary>
 
-    <details>
-    <summary>Output</summary>
+```shell
+pi@rpi-70-4b:~ $ sudo kubeadm init
+[init] Using Kubernetes version: v1.25.2
+[preflight] Running pre-flight checks
+	[WARNING SystemVerification]: missing optional cgroups: hugetlb blkio
+[preflight] Pulling images required for setting up a Kubernetes cluster
+[preflight] This might take a minute or two, depending on the speed of your internet connection
+[preflight] You can also perform this action in beforehand using 'kubeadm config images pull'
+[certs] Using certificateDir folder "/etc/kubernetes/pki"
+[certs] Generating "ca" certificate and key
+[certs] Generating "apiserver" certificate and key
+[certs] apiserver serving cert is signed for DNS names [kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local rpi-70-4b] and IPs [10.96.0.1 172.28.2.70]
+[certs] Generating "apiserver-kubelet-client" certificate and key
+[certs] Generating "front-proxy-ca" certificate and key
+[certs] Generating "front-proxy-client" certificate and key
+[certs] Generating "etcd/ca" certificate and key
+[certs] Generating "etcd/server" certificate and key
+[certs] etcd/server serving cert is signed for DNS names [localhost rpi-70-4b] and IPs [172.28.2.70 127.0.0.1 ::1]
+[certs] Generating "etcd/peer" certificate and key
+[certs] etcd/peer serving cert is signed for DNS names [localhost rpi-70-4b] and IPs [172.28.2.70 127.0.0.1 ::1]
+[certs] Generating "etcd/healthcheck-client" certificate and key
+[certs] Generating "apiserver-etcd-client" certificate and key
+[certs] Generating "sa" key and public key
+[kubeconfig] Using kubeconfig folder "/etc/kubernetes"
+[kubeconfig] Writing "admin.conf" kubeconfig file
+[kubeconfig] Writing "kubelet.conf" kubeconfig file
+[kubeconfig] Writing "controller-manager.conf" kubeconfig file
+[kubeconfig] Writing "scheduler.conf" kubeconfig file
+[kubelet-start] Writing kubelet environment file with flags to file "/var/lib/kubelet/kubeadm-flags.env"
+[kubelet-start] Writing kubelet configuration to file "/var/lib/kubelet/config.yaml"
+[kubelet-start] Starting the kubelet
+[control-plane] Using manifest folder "/etc/kubernetes/manifests"
+[control-plane] Creating static Pod manifest for "kube-apiserver"
+[control-plane] Creating static Pod manifest for "kube-controller-manager"
+[control-plane] Creating static Pod manifest for "kube-scheduler"
+[etcd] Creating static Pod manifest for local etcd in "/etc/kubernetes/manifests"
+[wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
+[apiclient] All control plane components are healthy after 27.012629 seconds
+[upload-config] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
+[kubelet] Creating a ConfigMap "kubelet-config" in namespace kube-system with the configuration for the kubelets in the cluster
+[upload-certs] Skipping phase. Please see --upload-certs
+[mark-control-plane] Marking the node rpi-70-4b as control-plane by adding the labels: [node-role.kubernetes.io/control-plane node.kubernetes.io/exclude-from-external-load-balancers]
+[mark-control-plane] Marking the node rpi-70-4b as control-plane by adding the taints [node-role.kubernetes.io/control-plane:NoSchedule]
+[bootstrap-token] Using token: x1eoem.mb7bsjblesfcv97o
+[bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
+[bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to get nodes
+[bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
+[bootstrap-token] Configured RBAC rules to allow the csrapprover controller automatically approve CSRs from a Node Bootstrap Token
+[bootstrap-token] Configured RBAC rules to allow certificate rotation for all node client certificates in the cluster
+[bootstrap-token] Creating the "cluster-info" ConfigMap in the "kube-public" namespace
+[kubelet-finalize] Updating "/etc/kubernetes/kubelet.conf" to point to a rotatable kubelet client certificate and key
+[addons] Applied essential addon: CoreDNS
+[addons] Applied essential addon: kube-proxy
 
-    ```shell
-    pi@rpi-70-4b:~ $ sudo mkdir -p /etc/apt/keyrings
-    pi@rpi-70-4b:~ $ curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    ```
+Your Kubernetes control-plane has initialized successfully!
 
-    </details>
+To start using your cluster, you need to run the following as a regular user:
 
-3. Use the following command to set up the repository:
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-    ```shell
-    echo \
-        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-        $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    ```
+Alternatively, if you are the root user, you can run:
 
-    <details>
-    <summary>Output</summary>
+  export KUBECONFIG=/etc/kubernetes/admin.conf
 
-    ```shell
-    pi@rpi-70-4b:~ $ echo \
-        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
-        $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-    ```
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
 
-    </details>
+Then you can join any number of worker nodes by running the following on each as root:
 
-### Install `containerd.io` package
+kubeadm join 172.28.2.70:6443 --token <removed> \
+	--discovery-token-ca-cert-hash <removed>
+```
 
-[Source Docs](https://docs.docker.com/engine/install/debian/#install-docker-engine)
+</details>
 
-I am using `apt` instead of `apt-get` and I am only installing the `containerd.io` package - docs adapted.
+## Configure `kubectl` on master node
 
-The `containerd.io` package contains `runc` too, but does not contain CNI plugins.
+```shell
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
 
-1. Update the `apt` package index, and install the *latest version* of `containerd`.
+## Deploy pod network
 
-    ```shell
-    sudo apt update
-    sudp apt install containerd.io
-    ```
+Using [Flannel](https://github.com/flannel-io/flannel):
 
-    <details>
-    <summary>Output</summary>
+```shell
+kubectl apply -f flannel/kube-flannel.yml
+```
 
-    ```shell
-    pi@rpi-70-4b:~ $ sudo apt update
-    Hit:1 http://security.debian.org/debian-security bullseye-security InRelease
-    Hit:2 http://deb.debian.org/debian bullseye InRelease
-    Get:3 https://download.docker.com/linux/debian bullseye InRelease [43.3 kB]
-    Hit:4 http://deb.debian.org/debian bullseye-updates InRelease
-    Hit:5 http://archive.raspberrypi.org/debian bullseye InRelease
-    Get:6 https://download.docker.com/linux/debian bullseye/stable arm64 Packages [11.7 kB]
-    Fetched 55.1 kB in 1s (40.9 kB/s)
-    Reading package lists... Done
-    Building dependency tree... Done
-    Reading state information... Done
-    All packages are up to date.
-    pi@rpi-70-4b:~ $ sudo apt install containerd.io
-    Reading package lists... Done
-    Building dependency tree... Done
-    Reading state information... Done
-    The following NEW packages will be installed:
-    containerd.io
-    0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
-    Need to get 20.9 MB of archives.
-    After this operation, 107 MB of additional disk space will be used.
-    Get:1 https://download.docker.com/linux/debian bullseye/stable arm64 containerd.io arm64 1.6.8-1 [20.9 MB]
-    Fetched 20.9 MB in 1s (15.4 MB/s)
-    Selecting previously unselected package containerd.io.
-    (Reading database ... 37391 files and directories currently installed.)
-    Preparing to unpack .../containerd.io_1.6.8-1_arm64.deb ...
-    Unpacking containerd.io (1.6.8-1) ...
-    Setting up containerd.io (1.6.8-1) ...
-    Created symlink /etc/systemd/system/multi-user.target.wants/containerd.service → /lib/systemd/system/containerd.service.
-    Processing triggers for man-db (2.9.4-2) ...
-    ```
+## Join a worker node to the cluster
 
-    </details>
+On worker node:
 
-2. Verify `containerd.service` is running.
+```shell
+kubeadm join 172.28.2.70:6443 --token <removed> \
+	--discovery-token-ca-cert-hash <removed>
+```
 
-    ```shell
-    sudo systemctl status containerd.service
-    ```
+## Verify node status
 
-    <details>
-    <summary>Output</summary>
+```shell
+kubectl get nodes
+```
 
-    ```shell
-    pi@rpi-70-4b:~ $ sudo systemctl status containerd.service
-    ● containerd.service - containerd container runtime
-        Loaded: loaded (/lib/systemd/system/containerd.service; enabled; vendor preset: enabled)
-        Active: active (running) since Wed 2022-09-28 09:55:32 EDT; 3min 0s ago
-        Docs: https://containerd.io
-        Process: 4198 ExecStartPre=/sbin/modprobe overlay (code=exited, status=0/SUCCESS)
-    Main PID: 4201 (containerd)
-        Tasks: 10
-            CPU: 319ms
-        CGroup: /system.slice/containerd.service
-                └─4201 /usr/bin/containerd
+<details>
+<summary>Output</summary>
 
-    Sep 28 09:55:32 rpi-70-4b containerd[4201]: time="2022-09-28T09:55:32.681271910-04:00" level=info msg="loading plugin \"io.containerd.grpc.v1.tasks\"..." type=io.containerd.grpc.v1
-    Sep 28 09:55:32 rpi-70-4b containerd[4201]: time="2022-09-28T09:55:32.681322983-04:00" level=info msg="loading plugin \"io.containerd.grpc.v1.version\"..." type=io.containerd.grpc.v1
-    Sep 28 09:55:32 rpi-70-4b containerd[4201]: time="2022-09-28T09:55:32.681428648-04:00" level=info msg="loading plugin \"io.containerd.tracing.processor.v1.otlp\"..." type=io.containerd.tracing.pro>
-    Sep 28 09:55:32 rpi-70-4b containerd[4201]: time="2022-09-28T09:55:32.681506758-04:00" level=info msg="skip loading plugin \"io.containerd.tracing.processor.v1.otlp\"..." error="no OpenTelemetry e>
-    Sep 28 09:55:32 rpi-70-4b containerd[4201]: time="2022-09-28T09:55:32.681558738-04:00" level=info msg="loading plugin \"io.containerd.internal.v1.tracing\"..." type=io.containerd.internal.v1
-    Sep 28 09:55:32 rpi-70-4b containerd[4201]: time="2022-09-28T09:55:32.681621829-04:00" level=error msg="failed to initialize a tracing processor \"otlp\"" error="no OpenTelemetry endpoint: skip pl>
-    Sep 28 09:55:32 rpi-70-4b containerd[4201]: time="2022-09-28T09:55:32.682532608-04:00" level=info msg=serving... address=/run/containerd/containerd.sock.ttrpc
-    Sep 28 09:55:32 rpi-70-4b containerd[4201]: time="2022-09-28T09:55:32.682844066-04:00" level=info msg=serving... address=/run/containerd/containerd.sock
-    Sep 28 09:55:32 rpi-70-4b systemd[1]: Started containerd container runtime.
-    Sep 28 09:55:32 rpi-70-4b containerd[4201]: time="2022-09-28T09:55:32.685461053-04:00" level=info msg="containerd successfully booted in 0.102584s"
-    ```
+```shell
+❯ kubectl get nodes
+NAME         STATUS   ROLES           AGE     VERSION
+rpi-70-4b    Ready    control-plane   85m     v1.25.2
+rpi-75-3bp   Ready    <none>          5m26s   v1.25.2
+rpi-76-3b2   Ready    <none>          3m25s   v1.25.2
+rpi-77-3b2   Ready    <none>          3m1s    v1.25.2
+rpi-78-3b2   Ready    <none>          2m15s   v1.25.2
+```
 
-    </details>
+</details>
