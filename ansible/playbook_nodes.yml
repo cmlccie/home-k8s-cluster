@@ -1,0 +1,4 @@
+---
+- import_playbook: playbook_configure_nodes.yml
+- import_playbook: playbook_containerd.yml
+- import_playbook: playbook_kube.yml

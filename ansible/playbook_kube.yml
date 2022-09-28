@@ -1,6 +1,6 @@
 ---
 - name: kubeadm, kubelet, and kubectl installed
-  hosts: master_nodes
+  hosts: nodes
   become: yes
   tasks:
     - name: System packages to allow APT repository access over HTTPS

@@ -1,6 +1,6 @@
 ---
 - name: Kubernetes node configuration
-  hosts: master_nodes
+  hosts: nodes
   become: yes
   tasks:
     - name: Kubernetes kernal modules file

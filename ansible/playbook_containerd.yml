@@ -1,6 +1,6 @@
 ---
 - name: containerd installed and configured
-  hosts: master_nodes
+  hosts: nodes
   become: yes
   tasks:
     - name: System packages to allow APT repository access over HTTPS
@@ -17,11 +17,11 @@
     - name: Docker APT key
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
-        keyring: /etc/apt/keyrings/docker.gpg
+        keyring: /usr/share/keyrings/docker.gpg
 
     - name: Docker APT repository
       apt_repository:
-        repo: deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/{{ ansible_system | lower }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
+        repo: deb [arch=arm64 signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/{{ ansible_system | lower }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
 
     - name: containerd package
       apt:

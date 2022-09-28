@@ -3,6 +3,9 @@
 connection:
 	ansible nodes -m ping
 
+nodes:
+	ansible-playbook playbook_nodes.yml
+
 configure_nodes:
 	ansible-playbook playbook_configure_nodes.yml
 
