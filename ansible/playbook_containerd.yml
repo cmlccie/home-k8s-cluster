@@ -1,0 +1,46 @@
+---
+- name: containerd installed and configured
+  hosts: master_nodes
+  become: yes
+  tasks:
+    - name: System packages to allow APT repository access over HTTPS
+      apt:
+        update_cache: yes
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: latest
+
+    - name: Docker APT key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        keyring: /etc/apt/keyrings/docker.gpg
+
+    - name: Docker APT repository
+      apt_repository:
+        repo: deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/{{ ansible_system | lower }}/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
+
+    - name: containerd package
+      apt:
+        update_cache: yes
+        name:
+          - containerd.io
+      notify: Restart containerd
+
+    - name: containerd config.toml file
+      ansible.builtin.copy:
+        src: root/etc/containerd/config.toml
+        dest: /etc/containerd/config.toml
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Restart containerd
+
+  handlers:
+    - name: Restart containerd
+      ansible.builtin.service:
+        name: containerd.service
+        state: restarted

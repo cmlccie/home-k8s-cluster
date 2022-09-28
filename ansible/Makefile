@@ -6,6 +6,9 @@ connection:
 configure_sensehat_nodes:
 	ansible-playbook playbook_configure_sensehat_nodes.yml
 
+containerd:
+	ansible-playbook playbook_containerd.yml
+
 upgrade:
 	ansible-playbook playbook_upgrade_system.yml
 
