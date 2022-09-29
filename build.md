@@ -29,14 +29,14 @@ From the `ansible/` directory:
 On the first master node:
 
 ```shell
-kubeadm init
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 ```
 
 <details>
 <summary>Output</summary>
 
 ```shell
-pi@rpi-70-4b:~ $ sudo kubeadm init
+pi@rpi-70-4b:~ $ sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 [init] Using Kubernetes version: v1.25.2
 [preflight] Running pre-flight checks
 	[WARNING SystemVerification]: missing optional cgroups: hugetlb blkio
@@ -72,13 +72,13 @@ pi@rpi-70-4b:~ $ sudo kubeadm init
 [control-plane] Creating static Pod manifest for "kube-scheduler"
 [etcd] Creating static Pod manifest for local etcd in "/etc/kubernetes/manifests"
 [wait-control-plane] Waiting for the kubelet to boot up the control plane as static Pods from directory "/etc/kubernetes/manifests". This can take up to 4m0s
-[apiclient] All control plane components are healthy after 27.012629 seconds
+[apiclient] All control plane components are healthy after 23.005426 seconds
 [upload-config] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
 [kubelet] Creating a ConfigMap "kubelet-config" in namespace kube-system with the configuration for the kubelets in the cluster
 [upload-certs] Skipping phase. Please see --upload-certs
 [mark-control-plane] Marking the node rpi-70-4b as control-plane by adding the labels: [node-role.kubernetes.io/control-plane node.kubernetes.io/exclude-from-external-load-balancers]
 [mark-control-plane] Marking the node rpi-70-4b as control-plane by adding the taints [node-role.kubernetes.io/control-plane:NoSchedule]
-[bootstrap-token] Using token: x1eoem.mb7bsjblesfcv97o
+[bootstrap-token] Using token: vgfrob.dp77jody3r5wx9qk
 [bootstrap-token] Configuring bootstrap tokens, cluster-info ConfigMap, RBAC Roles
 [bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to get nodes
 [bootstrap-token] Configured RBAC rules to allow Node Bootstrap tokens to post CSRs in order for nodes to get long term certificate credentials
@@ -126,7 +126,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 Using [Flannel](https://github.com/flannel-io/flannel):
 
 ```shell
-kubectl apply -f flannel/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
 ```
 
 ## Join a worker node to the cluster
@@ -158,3 +158,9 @@ rpi-78-3b2   Ready    <none>          2m15s   v1.25.2
 ```
 
 </details>
+
+## Verify system pods
+
+```shell
+kubectl get pods --namespace kube-system
+```
