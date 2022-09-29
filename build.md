@@ -163,4 +163,34 @@ rpi-78-3b2   Ready    <none>          2m15s   v1.25.2
 
 ```shell
 kubectl get pods --namespace kube-system
+
+# OR
+
+kubectl get pods -o wide -A
 ```
+
+<details>
+<summary>Output</summary>
+
+```shell
+❯ kubectl get pods -o wide -A
+NAMESPACE      NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE         NOMINATED NODE   READINESS GATES
+kube-flannel   kube-flannel-ds-8bsfz               1/1     Running   0          15m   172.28.2.75   rpi-75-3bp   <none>           <none>
+kube-flannel   kube-flannel-ds-bcqw8               1/1     Running   0          15m   172.28.2.76   rpi-76-3b2   <none>           <none>
+kube-flannel   kube-flannel-ds-p84lr               1/1     Running   0          14m   172.28.2.77   rpi-77-3b2   <none>           <none>
+kube-flannel   kube-flannel-ds-v7hjs               1/1     Running   0          13m   172.28.2.78   rpi-78-3b2   <none>           <none>
+kube-flannel   kube-flannel-ds-xgpzt               1/1     Running   0          20m   172.28.2.70   rpi-70-4b    <none>           <none>
+kube-system    coredns-565d847f94-8svbg            1/1     Running   0          23m   10.244.0.3    rpi-70-4b    <none>           <none>
+kube-system    coredns-565d847f94-pdp9t            1/1     Running   0          23m   10.244.0.2    rpi-70-4b    <none>           <none>
+kube-system    etcd-rpi-70-4b                      1/1     Running   3          23m   172.28.2.70   rpi-70-4b    <none>           <none>
+kube-system    kube-apiserver-rpi-70-4b            1/1     Running   3          23m   172.28.2.70   rpi-70-4b    <none>           <none>
+kube-system    kube-controller-manager-rpi-70-4b   1/1     Running   1          23m   172.28.2.70   rpi-70-4b    <none>           <none>
+kube-system    kube-proxy-272r8                    1/1     Running   0          23m   172.28.2.70   rpi-70-4b    <none>           <none>
+kube-system    kube-proxy-bjnjw                    1/1     Running   0          15m   172.28.2.76   rpi-76-3b2   <none>           <none>
+kube-system    kube-proxy-r6k9q                    1/1     Running   0          15m   172.28.2.75   rpi-75-3bp   <none>           <none>
+kube-system    kube-proxy-ttkp6                    1/1     Running   0          14m   172.28.2.77   rpi-77-3b2   <none>           <none>
+kube-system    kube-proxy-zxdhc                    1/1     Running   0          13m   172.28.2.78   rpi-78-3b2   <none>           <none>
+kube-system    kube-scheduler-rpi-70-4b            1/1     Running   3          23m   172.28.2.70   rpi-70-4b    <none>           <none>
+```
+
+</details>
