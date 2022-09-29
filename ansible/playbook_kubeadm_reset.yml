@@ -1,0 +1,46 @@
+---
+- name: Reset (remove) Kubernetes cluster configuration
+  hosts: nodes
+  become: yes
+  tasks:
+    - name: kubeadm reset
+      shell: |
+        kubeadm reset -f
+
+    - name: Clean CNI configuration
+      ansible.builtin.file:
+        path: /etc/cni/net.d
+        state: absent
+
+    - name: Reset iptables chain policies to ACCEPT
+      ansible.builtin.iptables:
+        chain: "{{ item }}"
+        policy: ACCEPT
+      with_items:
+        - INPUT
+        - FORWARD
+        - OUTPUT
+
+    - name: Flush iptables
+      ansible.builtin.iptables:
+        flush: yes
+
+    - name: Remove Kubernetes iptables chains
+      ansible.builtin.iptables:
+        chain_management: yes
+        chain: "{{ item }}"
+        state: absent
+      with_items:
+        - KUBE-EXTERNAL-SERVICES
+        - KUBE-FIREWALL
+        - KUBE-FORWARD
+        - KUBE-KUBELET-CANARY
+        - KUBE-NODEPORTS
+        - KUBE-PROXY-CANARY
+        - KUBE-PROXY-FIREWALL
+        - KUBE-SERVICES
+
+    - name: Remove ~/.kube/config
+      ansible.builtin.file:
+        path: "/users/{{ ansible_user }}/.kube/config"
+        state: absent

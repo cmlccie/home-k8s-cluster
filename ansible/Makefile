@@ -1,4 +1,4 @@
-.PHONY: connection upgrade reboot shutdown
+.PHONY: connection nodes configure_nodes configure_sensehat_nodes containerd kube upgrade reboot shutdown reset
 
 connection:
 	ansible nodes -m ping
@@ -26,3 +26,6 @@ reboot:
 
 shutdown:
 	ansible-playbook playbook_shutdown.yml
+
+reset:
+	ansible-playbook playbook_kubeadm_reset.yml
