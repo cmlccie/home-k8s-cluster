@@ -1,0 +1,9 @@
+---
+- name: Reboot Kubernetes Nodes
+  hosts: nodes
+  gather_facts: no
+  tasks:
+    - shell: vcgencmd measure_temp
+      register: cpu_temperature
+    - debug:
+        var: cpu_temperature.stdout_lines

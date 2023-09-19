@@ -29,3 +29,6 @@ shutdown:
 
 reset:
 	ansible-playbook playbook_kubeadm_reset.yml
+
+get_cpu_temp:
+	ansible-playbook playbook_get_cpu_temp.yml
