@@ -1,5 +1,5 @@
 ---
-- name: containerd Container Runtime
+- name: containerd Container Runtime (CRI)
   hosts: nodes
   become: yes
   tasks:
