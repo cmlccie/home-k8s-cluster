@@ -1,9 +1,10 @@
 ---
-- name: kubeadm, kubelet, and kubectl installed
+- name: Kubernetes packages
   hosts: nodes
   become: yes
   tasks:
-    - name: System packages to allow APT repository access over HTTPS
+    # System packages to allow APT repository access over HTTPS
+    - name: Dependencies
       apt:
         update_cache: yes
         name:
@@ -22,25 +23,39 @@
       apt_repository:
         repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
 
-    - name: kubeadm, kubelet, and kubectl packages
+    - name: kubeadm
       apt:
         update_cache: yes
         allow_change_held_packages: yes
         allow_downgrade: yes
         name:
-          - "kubeadm={{ kubernetes_version }}"
-          - "kubelet={{ kubernetes_version }}"
-          - "kubectl={{ kubernetes_version }}"
+          - "kubeadm={{ kubeadm_version }}"
 
     - name: Hold kubeadm
       dpkg_selections:
         name: kubeadm
         selection: hold
 
+    - name: kubelet
+      apt:
+        update_cache: yes
+        allow_change_held_packages: yes
+        allow_downgrade: yes
+        name:
+          - "kubelet={{ kubelet_version }}"
+
     - name: Hold kubelet
       dpkg_selections:
         name: kubelet
         selection: hold
+
+    - name: kubectl
+      apt:
+        update_cache: yes
+        allow_change_held_packages: yes
+        allow_downgrade: yes
+        name:
+          - "kubectl={{ kubectl_version }}"
 
     - name: Hold kubectl
       dpkg_selections:

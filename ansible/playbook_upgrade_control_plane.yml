@@ -1,0 +1,24 @@
+---
+- name: Upgrade control plane nodes
+  hosts: control_plane_nodes
+  become: yes
+  tasks:
+    - name: kubeadm
+      apt:
+        update_cache: yes
+        allow_change_held_packages: yes
+        allow_downgrade: yes
+        name:
+          - "kubeadm={{ kubeadm_version }}"
+    - name: kubeadm upgrade plan
+      shell: |
+        kubeadm upgrade plan
+      register: kubeadm_upgrade_plan
+    - debug:
+        var: kubeadm_upgrade_plan.stdout_lines
+    - name: kubeadm upgrade apply
+      shell: |
+        kubeadm upgrade apply {{ cluster_version }} --yes
+      register: kubeadm_upgrade_apply
+    - debug:
+        var: kubeadm_upgrade_apply.stdout_lines

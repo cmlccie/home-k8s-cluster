@@ -15,11 +15,17 @@ configure_sensehat_nodes:
 containerd:
 	ansible-playbook playbook_containerd.yml
 
-kube:
-	ansible-playbook playbook_kube.yml
+deploy_nodes:
+	ansible-playbook playbook_deploy_nodes.yml
 
-upgrade:
+upgrade_system:
 	ansible-playbook playbook_upgrade_system.yml
+
+upgrade_control_plane:
+	ansible-playbook playbook_upgrade_control_plane.yml
+
+upgrade_nodes:
+	ansible-playbook playbook_upgrade_nodes.yml
 
 reboot:
 	ansible-playbook playbook_reboot.yml
@@ -27,8 +33,8 @@ reboot:
 shutdown:
 	ansible-playbook playbook_shutdown.yml
 
-reset:
-	ansible-playbook playbook_kubeadm_reset.yml
+# reset:
+# 	ansible-playbook playbook_kubeadm_reset.yml
 
 get_cpu_temp:
 	ansible-playbook playbook_get_cpu_temp.yml

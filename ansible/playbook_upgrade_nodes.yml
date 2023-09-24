@@ -1,0 +1,14 @@
+---
+- import_playbook: playbook_kube_packages.yml
+- name: Upgrade nodes
+  hosts: nodes
+  become: yes
+  tasks:
+    - name: Upgrade node
+      shell: |
+        kubeadm upgrade node
+    - name: Restart kubelet
+      ansible.builtin.systemd:
+        state: restarted
+        daemon_reload: true
+        name: kubelet
