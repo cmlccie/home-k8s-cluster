@@ -2,7 +2,7 @@
 # flannel Pod Networking (CNI)
 # -------------------------------------------------------------------------------------------------
 
-resource "helm_release" "example" {
+resource "helm_release" "flannel" {
   name = "flannel"
 
   namespace        = "kube-flannel"
