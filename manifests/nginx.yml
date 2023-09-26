@@ -4,8 +4,10 @@ metadata:
   name: nginx-test
   labels:
     app: nginx
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 172.28.2.89
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - name: http
       protocol: TCP
@@ -20,7 +22,7 @@ metadata:
   labels:
     app: nginx
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: nginx
@@ -34,7 +36,7 @@ spec:
           image: nginx:latest
           resources:
             limits:
-              cpu: "1.0"
-              memory: "128Mi"
+              cpu: 100m
+              memory: 128Mi
           ports:
             - containerPort: 80
