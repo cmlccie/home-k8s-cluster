@@ -1,0 +1,7 @@
+- name: Prune unused images
+  hosts: nodes
+  become: yes
+  gather_facts: yes
+  tasks:
+    - name: Prune unused images
+      shell: /usr/bin/crictl rmi --prune

@@ -4,12 +4,31 @@
   become: yes
   tasks:
     - name: kubeadm reset
-      shell: |
-        kubeadm reset -f
+      shell: kubeadm reset -f
 
-    - name: Clean CNI configuration
+    - name: Remove CNI configuration
       ansible.builtin.file:
         path: /etc/cni/net.d
+        state: absent
+
+    - name: Remove Kubernetes configuration
+      ansible.builtin.file:
+        path: /etc/kubernetes
+        state: absent
+
+    - name: Remove kubelet configuration
+      ansible.builtin.file:
+        path: /var/lib/kubelet
+        state: absent
+
+    - name: Remove etcd configuration
+      ansible.builtin.file:
+        path: /var/lib/etcd
+        state: absent
+
+    - name: Remove ~/.kube/config
+      ansible.builtin.file:
+        path: ~/.kube/config
         state: absent
 
     - name: Reset iptables chain policies to ACCEPT
@@ -44,3 +63,5 @@
       ansible.builtin.file:
         path: "/users/{{ ansible_user }}/.kube/config"
         state: absent
+
+- import_playbook: playbook_image_prune.yml
