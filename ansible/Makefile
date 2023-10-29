@@ -1,19 +1,10 @@
-.PHONY: connection nodes configure_nodes configure_sensehat_nodes containerd kube upgrade reboot shutdown reset
+.PHONY: connection get_cpu_temp deploy_nodes upgrade_system upgrade_control_plane upgrade_nodes reboot shutdown prune
 
 connection:
 	ansible nodes -m ping
 
-nodes:
-	ansible-playbook playbook_nodes.yml
-
-configure_nodes:
-	ansible-playbook playbook_configure_nodes.yml
-
-configure_sensehat_nodes:
-	ansible-playbook playbook_configure_sensehat_nodes.yml
-
-containerd:
-	ansible-playbook playbook_containerd.yml
+get_cpu_temp:
+	ansible-playbook playbook_get_cpu_temp.yml
 
 deploy_nodes:
 	ansible-playbook playbook_deploy_nodes.yml
@@ -33,8 +24,5 @@ reboot:
 shutdown:
 	ansible-playbook playbook_shutdown.yml
 
-# reset:
-# 	ansible-playbook playbook_kubeadm_reset.yml
-
-get_cpu_temp:
-	ansible-playbook playbook_get_cpu_temp.yml
+prune:
+	ansible-playbook playbook_image_prune.yml
