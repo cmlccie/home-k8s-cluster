@@ -3,17 +3,6 @@
   hosts: nodes
   become: yes
   tasks:
-    # System packages to allow APT repository access over HTTPS
-    - name: Dependencies
-      apt:
-        update_cache: yes
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg
-        state: latest
-
     - name: Google Cloud APT key
       apt_key:
         url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
@@ -23,9 +12,22 @@
       apt_repository:
         repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
 
-    - name: kubeadm
+    - name: Update apt cache
       apt:
         update_cache: yes
+
+    # System packages to allow APT repository access over HTTPS
+    - name: Dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+        state: latest
+
+    - name: kubeadm
+      apt:
         allow_change_held_packages: yes
         allow_downgrade: yes
         name:
@@ -38,7 +40,6 @@
 
     - name: kubelet
       apt:
-        update_cache: yes
         allow_change_held_packages: yes
         allow_downgrade: yes
         name:
@@ -49,9 +50,13 @@
         name: kubelet
         selection: hold
 
+    - name: cri-tools
+      apt:
+        name:
+          - cri-tools
+
     - name: kubectl
       apt:
-        update_cache: yes
         allow_change_held_packages: yes
         allow_downgrade: yes
         name:

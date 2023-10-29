@@ -40,6 +40,16 @@
         mode: "0644"
       notify: Restart containerd
 
+    - name: containerd sandbox_image
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: "^    sandbox_image ="
+        line: '    sandbox_image = "registry.k8s.io/pause:3.9"'
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart containerd
+
   handlers:
     - name: Restart containerd
       ansible.builtin.service:
