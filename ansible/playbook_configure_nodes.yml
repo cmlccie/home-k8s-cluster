@@ -3,6 +3,30 @@
   hosts: nodes
   become: yes
   tasks:
+    - name: Enable IPv6 forwarding - default network interface
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.default.forwarding
+        value: "1"
+        sysctl_set: true
+
+    - name: Enable IPv6 forwarding - all network interfaces
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.all.forwarding
+        value: "1"
+        sysctl_set: true
+
+    - name: Accept IPv6 Router Advertisements - default network interface
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.default.accept_ra
+        value: "2"
+        sysctl_set: true
+
+    - name: Accept IPv6 Router Advertisements - all network interfaces
+      ansible.posix.sysctl:
+        name: net.ipv6.conf.all.accept_ra
+        value: "2"
+        sysctl_set: true
+
     - name: lh-nas01.local entry in /etc/hosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
@@ -61,6 +85,12 @@
         - Disable SWAP
         - Reboot
 
+  handlers:
+    - name: Disable SWAP
+      shell: |
+        dphys-swapfile swapoff
+        dphys-swapfile uninstall
+
     - name: Configure crictl
       ansible.builtin.copy:
         src: root/etc/crictl.yaml
@@ -68,12 +98,6 @@
         owner: root
         group: root
         mode: "0644"
-
-  handlers:
-    - name: Disable SWAP
-      shell: |
-        dphys-swapfile swapoff
-        dphys-swapfile uninstall
 
     - name: Reboot
       reboot:
