@@ -15,7 +15,5 @@ resource "helm_release" "minecraft_homeworld" {
   repository = "https://itzg.github.io/minecraft-server-charts/"
   chart      = "minecraft-bedrock"
 
-  values = [
-    "${file("extra/minecraft_homeworld_values.yml")}",
-  ]
+  values = ["${file("values/minecraft_homeworld.yaml")}"]
 }

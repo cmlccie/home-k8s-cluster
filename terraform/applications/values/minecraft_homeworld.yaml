@@ -23,7 +23,7 @@ persistence:
     Size: 20Gi
 
 serviceAnnotations:
-  metallb.universe.tf/loadBalancerIPs: 172.28.2.81
+  metallb.universe.tf/loadBalancerIPs: 172.30.1.100
 
 minecraftServer:
   # This must be overridden, since we can't accept this for the user.

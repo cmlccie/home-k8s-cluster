@@ -20,6 +20,8 @@ resource "helm_release" "metallb" {
 
   repository = "https://metallb.github.io/metallb"
   chart      = "metallb"
+
+  depends_on = [helm_release.flannel]
 }
 
 # --------------------------------------------------------------------------------------
@@ -28,9 +30,20 @@ resource "helm_release" "metallb" {
 
 locals {
   metallb_ip_address_pools = {
-    default = [
-      "172.28.2.80-172.28.2.89",
-    ]
+    static = {
+      autoAssign = false
+      addresses = [
+        "172.30.1.0/24",
+        "2600:1700:5010:466a::/80",
+      ]
+    }
+    default = {
+      autoAssign = true
+      addresses = [
+        "172.30.2.0/24",
+        "fddf:b7e0:ec01::/80",
+      ]
+    }
   }
 }
 
@@ -45,22 +58,27 @@ resource "kubernetes_manifest" "metallb_ip_address_pool" {
       "namespace" = "metallb-system"
     }
     "spec" = {
-      "addresses" = each.value
+      "autoAssign" = each.value.autoAssign
+      "addresses"  = each.value.addresses
     }
   }
+
+  depends_on = [helm_release.metallb]
 }
 
 # --------------------------------------------------------------------------------------
 # L2 Advertisement
 # --------------------------------------------------------------------------------------
 
-resource "kubernetes_manifest" "l2advertisement_metallb_system_example" {
+resource "kubernetes_manifest" "metallb_system_l2advertisement" {
   manifest = {
     "apiVersion" = "metallb.io/v1beta1"
     "kind"       = "L2Advertisement"
     "metadata" = {
-      "name"      = "example"
+      "name"      = "l2advertisement"
       "namespace" = "metallb-system"
     }
   }
+
+  depends_on = [helm_release.metallb]
 }

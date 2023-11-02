@@ -14,6 +14,11 @@ resource "helm_release" "flannel" {
 
   set {
     name  = "podCidr"
-    value = "10.244.0.0/16"
+    value = "10.1.0.0/16"
+  }
+
+  set {
+    name  = "podCidrv6"
+    value = "fd6d:a591:2efb:100::/56"
   }
 }

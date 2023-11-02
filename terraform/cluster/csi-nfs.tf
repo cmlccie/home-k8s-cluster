@@ -45,7 +45,7 @@ resource "helm_release" "kube_csi_nfs" {
 
   set {
     name  = "nfs.server"
-    value = "172.28.2.10"
+    value = "172.30.0.10"
   }
 
   set {
@@ -72,4 +72,6 @@ resource "helm_release" "kube_csi_nfs" {
     name  = "storageClass.defaultClass"
     value = each.value.default
   }
+
+  depends_on = [helm_release.flannel]
 }
