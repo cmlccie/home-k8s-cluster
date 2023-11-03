@@ -4,7 +4,7 @@
 
 resource "kubernetes_namespace" "metallb" {
   metadata {
-    name = "metallb-system"
+    name = "kube-loadbalancer-metallb"
     labels = {
       "pod-security.kubernetes.io/enforce" = "privileged"
       "pod-security.kubernetes.io/audit"   = "privileged"
@@ -55,7 +55,7 @@ resource "kubernetes_manifest" "metallb_ip_address_pool" {
     "kind"       = "IPAddressPool"
     "metadata" = {
       "name"      = "ip-address-pool-${each.key}"
-      "namespace" = "metallb-system"
+      "namespace" = one(kubernetes_namespace.metallb.metadata[*].name)
     }
     "spec" = {
       "autoAssign" = each.value.autoAssign
@@ -76,7 +76,7 @@ resource "kubernetes_manifest" "metallb_system_l2advertisement" {
     "kind"       = "L2Advertisement"
     "metadata" = {
       "name"      = "l2advertisement"
-      "namespace" = "metallb-system"
+      "namespace" = one(kubernetes_namespace.metallb.metadata[*].name)
     }
   }
 
