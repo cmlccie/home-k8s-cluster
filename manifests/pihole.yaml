@@ -1,0 +1,152 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pihole
+  labels:
+    app: pihole
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole
+  serviceName: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+    spec:
+      containers:
+        - name: pihole
+          image: pihole/pihole:2023.10.0
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          env:
+            - name: TZ
+              value: "America/NewYork"
+            - name: VIRTUAL_HOST
+              value: pihole.home.lunsford.io
+            - name: WEBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pihole-credentials
+                  key: password
+          volumeMounts:
+            - name: pihole-config
+              mountPath: /etc/pihole
+            - name: dnsmasq-config
+              mountPath: /etc/dnsmasq.d
+          ports:
+            - name: web
+              containerPort: 80
+              protocol: TCP
+            - name: dns-udp
+              containerPort: 53
+              protocol: UDP
+            - name: dns-tcp
+              containerPort: 53
+              protocol: TCP
+  volumeClaimTemplates:
+    - metadata:
+        name: pihole-config
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: lh-nas01-m2-rwo
+        resources:
+          requests:
+            storage: 100Mi
+    - metadata:
+        name: dnsmasq-config
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: lh-nas01-m2-rwo
+        resources:
+          requests:
+            storage: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole-web
+spec:
+  selector:
+    app: pihole
+  type: ClusterIP
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: PreferDualStack
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dns-primary
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 172.30.2.53,fddf:b7e0:ec01::2:53
+spec:
+  selector:
+    app: pihole
+  type: LoadBalancer
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: PreferDualStack
+  ports:
+    - name: dns-udp
+      protocol: UDP
+      port: 53
+      targetPort: 53
+    - name: dns-tcp
+      protocol: TCP
+      port: 53
+      targetPort: 53
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dns-secondary
+  annotations:
+    metallb.universe.tf/loadBalancerIPs: 172.30.2.35,fddf:b7e0:ec01::2:35
+spec:
+  selector:
+    app: pihole
+  type: LoadBalancer
+  ipFamilies:
+    - IPv4
+    - IPv6
+  ipFamilyPolicy: PreferDualStack
+  ports:
+    - name: dns-udp
+      protocol: UDP
+      port: 53
+      targetPort: 53
+    - name: dns-tcp
+      protocol: TCP
+      port: 53
+      targetPort: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pihole
+spec:
+  rules:
+    - host: pihole.home.lunsford.io
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: pihole-web
+                port:
+                  number: 80
