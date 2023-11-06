@@ -1,7 +1,7 @@
 controller:
   ingressClassResource:
-    name: nginx
-    default: true
+    name: nginx-external
+    default: false
   service:
     annotations:
       metallb.universe.tf/loadBalancerIPs: 172.30.1.80,2600:1700:5010:466a::1:80

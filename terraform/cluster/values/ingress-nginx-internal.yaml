@@ -1,0 +1,12 @@
+controller:
+  ingressClassResource:
+    name: nginx
+    default: true
+  service:
+    type: LoadBalancer
+    annotations:
+      metallb.universe.tf/loadBalancerIPs: 172.30.2.80,fddf:b7e0:ec01::2:80
+    ipFamilyPolicy: "PreferDualStack"
+    ipFamilies:
+      - IPv4
+      - IPv6
