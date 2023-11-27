@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: pihole
-          image: pihole/pihole:2023.10.0
+          image: pihole/pihole:2023.11.0
           imagePullPolicy: Always
           resources:
             requests:
@@ -36,6 +36,12 @@ spec:
                 secretKeyRef:
                   name: pihole-credentials
                   key: password
+            - name: FTLCONF_RATE_LIMIT
+              value: "0/0"
+            - name: FTLCONF_MOZILLA_CANARY
+              value: "true"
+            - name: FTLCONF_BLOCK_ICLOUD_PR
+              value: "true"
           volumeMounts:
             - name: pihole-config
               mountPath: /etc/pihole
