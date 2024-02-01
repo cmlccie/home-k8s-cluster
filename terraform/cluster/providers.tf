@@ -7,8 +7,8 @@
 # --------------------------------------------------------------------------------------
 
 provider "kubernetes" {
-  config_path    = "~/Desktop/admin.conf"
-  config_context = "kubernetes-admin@kubernetes"
+  config_path    = "~/.kube/config"
+  config_context = "home-k8s-cluster"
 }
 
 # --------------------------------------------------------------------------------------
@@ -17,7 +17,7 @@ provider "kubernetes" {
 
 provider "helm" {
   kubernetes {
-    config_path    = "~/Desktop/admin.conf"
-    config_context = "kubernetes-admin@kubernetes"
+    config_path    = "~/.kube/config"
+    config_context = "home-k8s-cluster"
   }
 }
