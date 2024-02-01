@@ -1,5 +1,6 @@
 ---
-cluster_version: v1.28.2
-kubeadm_version: 1.28.2-00
-kubelet_version: 1.28.2-00
-kubectl_version: 1.28.2-00
+kubernetes_version: v1.28
+cluster_version: v1.28.6
+kubeadm_version: 1.28.6-1.1
+kubelet_version: 1.28.6-1.1
+kubectl_version: 1.28.6-1.1
