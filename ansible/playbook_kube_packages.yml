@@ -18,7 +18,7 @@
       apt_repository:
         repo: deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ kubernetes_version }}/deb/ /
 
-    - name: Update apt cache
+    - name: Update APT cache
       apt:
         update_cache: yes
 
