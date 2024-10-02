@@ -10,7 +10,7 @@ resource "helm_release" "flannel" {
 
   repository = "https://flannel-io.github.io/flannel/"
   chart      = "flannel"
-  version    = "v0.24.2"
+  version    = "v0.25.6"
 
   set {
     name  = "podCidr"
