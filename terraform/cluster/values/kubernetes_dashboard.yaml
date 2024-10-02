@@ -1,0 +1,10 @@
+app:
+  settings:
+    global:
+      clusterName: "home-k8s-cluster"
+      disableAccessDeniedNotifications: true
+  ingress:
+    enabled: true
+    hosts:
+      - k8s.home.lunsford.io
+    ingressClassName: nginx

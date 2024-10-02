@@ -13,26 +13,3 @@ resource "helm_release" "kubernetes_dashboard" {
 
   values = ["${file("values/kubernetes_dashboard.yaml")}"]
 }
-
-resource "kubernetes_service" "kubernetes_dashboard" {
-  metadata {
-    name      = "kubernetes-dashboard-test"
-    namespace = "kubernetes-dashboard"
-  }
-
-  spec {
-    type = "LoadBalancer"
-
-    ip_families      = ["IPv4", "IPv6"]
-    ip_family_policy = "PreferDualStack"
-
-    selector = {
-      "app.kubernetes.io/name" = "kubernetes-dashboard"
-    }
-
-    port {
-      port        = 443
-      target_port = 8443
-    }
-  }
-}
