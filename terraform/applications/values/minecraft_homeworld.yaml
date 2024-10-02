@@ -4,6 +4,11 @@ image:
   tag: latest
   pullPolicy: Always
 
+livenessProbe:
+  initialDelaySeconds: 120
+readinessProbe:
+  initialDelaySeconds: 120
+
 workloadAsStatefulSet: true
 strategyType: RollingUpdate
 

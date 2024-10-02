@@ -14,6 +14,7 @@ resource "helm_release" "minecraft_homeworld" {
 
   repository = "https://itzg.github.io/minecraft-server-charts/"
   chart      = "minecraft-bedrock"
+  version    = "2.8.1"
 
   values = ["${file("values/minecraft_homeworld.yaml")}"]
 }
